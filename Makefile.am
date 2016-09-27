@@ -15,7 +15,8 @@ cmoh_sql_includes =
 
 cmoh_sqldir = $(includedir)/cmoh/sql
 cmoh_sql_HEADERS = \
-	include/cmoh/sql/row.hpp
+	include/cmoh/sql/row.hpp \
+	include/cmoh/sql/utils.hpp
 cmoh_sql_includes += $(cmoh_sql_HEADERS)
 
 # use the include directory for internal builds
