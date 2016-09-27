@@ -76,6 +76,51 @@ join(
 }
 
 
+/**
+ * Join elements in a tuple using an outstream
+ *
+ * Use this function to join tuple elements using an `std::ostream`.
+ * The separator specified is used for separating the objects.
+ */
+template <
+    typename Separator,
+    typename Tuple,
+    std::size_t ...indices
+>
+void
+join_tuple(
+    std::ostream& stream,
+    Separator&& separator,
+    Tuple&& tuple,
+    std::integer_sequence<std::size_t, indices...>&&
+) {
+    join(
+        stream,
+        std::forward<Separator>(separator),
+        std::get<indices>(std::forward<Tuple>(tuple))...
+    );
+}
+
+// convenience overloads
+template <
+    typename Separator,
+    typename Tuple
+>
+void
+join_tuple(
+    std::ostream& stream,
+    Separator&& separator,
+    Tuple&& tuple
+) {
+    join(
+        stream,
+        std::forward<Separator>(separator),
+        std::forward<Tuple>(tuple),
+        std::make_index_sequence<std::tuple_size<std::decay<Tuple>>::value>{}
+    );
+}
+
+
 }
 }
 }
