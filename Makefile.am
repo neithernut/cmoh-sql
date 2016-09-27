@@ -18,6 +18,9 @@ cmoh_sql_HEADERS = \
 	include/cmoh/sql/row.hpp
 cmoh_sql_includes += $(cmoh_sql_HEADERS)
 
+# use the include directory for internal builds
+AM_CPPFLAGS = -I$(top_srcdir)/include
+
 
 #
 # DEPENDENCY TESTS
