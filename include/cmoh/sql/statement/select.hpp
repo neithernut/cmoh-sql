@@ -30,6 +30,7 @@
 #include <utility>
 
 // local includes
+#include <cmoh/sql/statement/expression.hpp>
 #include <cmoh/sql/utils.hpp>
 
 
@@ -109,13 +110,13 @@ auto
 select(
     Fields&&... fields
 ) {
-    return abstract_select<std::true_type, Fields...>(
+    return abstract_select<expression, Fields...>(
         std::forward<Fields>(fields)...
     );
 }
 
 
-// overload for shifting a select statement to an ostream
+// overload for shifting a select statement to an ostream, with where clause
 template <
     typename ...Args
 >
@@ -126,9 +127,22 @@ operator << (
 ) {
     stream << "SELECT (";
     join_tuple(stream, ", ", statement.fields());
-    stream << ")";
-    // TODO: stream condition
-    stream << ";";
+    stream << ") WHERE" << statement.condition() << ";";
+    return stream;
+}
+
+// overload for shifting a select statement to an ostream, without where clause
+template <
+    typename ...Args
+>
+std::ostream&
+operator << (
+    std::ostream& stream,
+    abstract_select<expression, Args...> const& statement
+) {
+    stream << "SELECT (";
+    join_tuple(stream, ", ", statement.fields());
+    stream << ");";
     return stream;
 }
 

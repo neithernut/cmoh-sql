@@ -21,6 +21,7 @@ cmoh_sql_includes += $(cmoh_sql_HEADERS)
 
 cmoh_sql_statementdir = $(cmoh_sqldir)/statement
 cmoh_sql_statement_HEADERS = \
+	include/cmoh/sql/statement/expression.hpp \
 	include/cmoh/sql/statement/select.hpp
 cmoh_sql_includes += $(cmoh_sql_statement_HEADERS)
 
