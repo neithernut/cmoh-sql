@@ -25,6 +25,10 @@
 #define CMOH_SQL_STATEMENT_EXPRESSION_HPP__
 
 
+// std includes
+#include <ostream>
+
+
 namespace cmoh {
 namespace sql {
 namespace statenemt {
@@ -36,6 +40,42 @@ namespace statenemt {
  * This class represents an empty expression.
  */
 struct expression {};
+
+
+/**
+ * Expression yielding a value of a certain type
+ */
+template <
+    typename Type
+>
+struct typed_expression {
+    typedef Type type;
+};
+
+
+/**
+ * Expression representing a column
+ *
+ * Use this value to represent a column
+ */
+template <
+    typename Attribute
+>
+struct column : typed_expression<typename Attribute::type> {
+    typedef Attribute attribute;
+};
+
+// overload for shifting a column expression to an ostream
+template <
+    typename Attribute
+>
+std::ostream&
+operator << (
+    std::ostream& stream,
+    column<Attribute> const& expression
+) {
+    return stream << decltype(expression)::attribute::key();
+}
 
 
 }
