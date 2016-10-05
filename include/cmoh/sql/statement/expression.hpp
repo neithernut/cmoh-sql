@@ -72,12 +72,12 @@ struct column : typed_expression<typename Attribute::type> {
 
 // overload for shifting a column expression to an ostream
 template <
-    typename Attribute
+    typename ...T
 >
 std::ostream&
 operator << (
     std::ostream& stream,
-    expression::column<Attribute> const& exp
+    expression::column<T...> const& exp
 ) {
     return stream << decltype(exp)::attribute::key();
 }
