@@ -15,8 +15,15 @@ cmoh_sql_includes =
 
 cmoh_sqldir = $(includedir)/cmoh/sql
 cmoh_sql_HEADERS = \
-	include/cmoh/sql/row.hpp
+	include/cmoh/sql/row.hpp \
+	include/cmoh/sql/utils.hpp
 cmoh_sql_includes += $(cmoh_sql_HEADERS)
+
+cmoh_sql_statementdir = $(cmoh_sqldir)/statement
+cmoh_sql_statement_HEADERS = \
+	include/cmoh/sql/statement/expression.hpp \
+	include/cmoh/sql/statement/select.hpp
+cmoh_sql_includes += $(cmoh_sql_statement_HEADERS)
 
 # use the include directory for internal builds
 AM_CPPFLAGS = -I$(top_srcdir)/include
