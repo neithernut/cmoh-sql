@@ -32,6 +32,7 @@
 namespace cmoh {
 namespace sql {
 namespace statenemt {
+namespace expression {
 
 
 /**
@@ -65,6 +66,10 @@ struct column : typed_expression<typename Attribute::type> {
     typedef Attribute attribute;
 };
 
+
+}
+
+
 // overload for shifting a column expression to an ostream
 template <
     typename Attribute
@@ -72,9 +77,9 @@ template <
 std::ostream&
 operator << (
     std::ostream& stream,
-    column<Attribute> const& expression
+    expression::column<Attribute> const& exp
 ) {
-    return stream << decltype(expression)::attribute::key();
+    return stream << decltype(exp)::attribute::key();
 }
 
 

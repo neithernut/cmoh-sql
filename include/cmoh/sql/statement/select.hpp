@@ -110,7 +110,7 @@ auto
 select(
     Fields&&... fields
 ) {
-    return abstract_select<expression, Fields...>(
+    return abstract_select<expression::expression, Fields...>(
         std::forward<Fields>(fields)...
     );
 }
@@ -138,7 +138,7 @@ template <
 std::ostream&
 operator << (
     std::ostream& stream,
-    abstract_select<expression, Args...> const& statement
+    abstract_select<expression::expression, Args...> const& statement
 ) {
     stream << "SELECT (";
     join_tuple(stream, ", ", statement.fields());
