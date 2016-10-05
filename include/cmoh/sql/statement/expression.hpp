@@ -75,7 +75,7 @@ template <
     typename Type
 >
 struct literal : typed_expression<Type> {
-    constexpr literal(Type&& value) : value{value} {}
+    constexpr literal(Type&& value) noexcept : value{value} {}
 
     const Type value;
 };
@@ -97,7 +97,7 @@ struct equality_expression : typed_expression<bool> {
         "Type missmatch between left hand side and right hand side."
     );
 
-    constexpr equality_expression(lhs_type&& lhs, rhs_type&& rhs) :
+    constexpr equality_expression(lhs_type&& lhs, rhs_type&& rhs) noexcept :
         lhs{std::forward<LHS>(lhs)}, rhs{std::forward<RHS>(rhs)} {}
 
     const lhs_type lhs;
@@ -122,7 +122,7 @@ struct conjunction : typed_expression<bool> {
         "Only expressions yielding boolean values can be used in a conjunction."
     );
 
-    constexpr conjunction(lhs_type&& lhs, rhs_type&& rhs) :
+    constexpr conjunction(lhs_type&& lhs, rhs_type&& rhs) noexcept :
         lhs{std::forward<LHS>(lhs)}, rhs{std::forward<RHS>(rhs)} {}
 
     const lhs_type lhs;
@@ -147,7 +147,7 @@ struct disjunction : typed_expression<bool> {
         "Only expressions yielding boolean values can be used in a disjunction."
     );
 
-    constexpr disjunction(lhs_type&& lhs, rhs_type&& rhs) :
+    constexpr disjunction(lhs_type&& lhs, rhs_type&& rhs) noexcept :
         lhs{std::forward<LHS>(lhs)}, rhs{std::forward<RHS>(rhs)} {}
 
     const lhs_type lhs;
@@ -166,7 +166,7 @@ std::ostream&
 operator << (
     std::ostream& stream,
     expression::column<T...> const& exp
-) {
+) noexcept {
     return stream << decltype(exp)::attribute::key();
 }
 
@@ -177,7 +177,7 @@ std::ostream&
 operator << (
     std::ostream& stream,
     expression::equality_expression<T...> const& exp
-) {
+) noexcept {
     return stream << "( " << exp.lhs << " = " << exp.rhs << " )";
 }
 
@@ -188,7 +188,7 @@ std::ostream&
 operator << (
     std::ostream& stream,
     expression::conjunction<T...> const& exp
-) {
+) noexcept {
     return stream << "( " << exp.lhs << " AND " << exp.rhs << " )";
 }
 
@@ -199,7 +199,7 @@ std::ostream&
 operator << (
     std::ostream& stream,
     expression::disjunction<T...> const& exp
-) {
+) noexcept {
     return stream << "( " << exp.lhs << " OR " << exp.rhs << " )";
 }
 
@@ -214,7 +214,7 @@ expression::equality_expression<LHS, RHS>
 operator == (
     LHS&& lhs,
     RHS&& rhs
-) {
+) noexcept {
     return {std::forward<LHS>(lhs), std::forward<RHS>(rhs)};
 }
 
@@ -227,7 +227,7 @@ expression::conjunction<LHS, RHS>
 operator && (
     LHS&& lhs,
     RHS&& rhs
-) {
+) noexcept {
     return {std::forward<LHS>(lhs), std::forward<RHS>(rhs)};
 }
 
@@ -240,7 +240,7 @@ expression::disjunction<LHS, RHS>
 operator || (
     LHS&& lhs,
     RHS&& rhs
-) {
+) noexcept {
     return {std::forward<LHS>(lhs), std::forward<RHS>(rhs)};
 }
 
