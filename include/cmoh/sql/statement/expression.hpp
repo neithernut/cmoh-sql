@@ -67,6 +67,43 @@ struct column : typed_expression<typename Attribute::type> {
 };
 
 
+/**
+ * Literal representation
+ */
+template <
+    typename Type
+>
+struct literal : typed_expression<Type> {
+    constexpr literal(Type&& value) : value{value} {}
+
+    const Type value;
+};
+
+
+/**
+ * Representation of a check for equality
+ */
+template <
+    typename LHS,
+    typename RHS
+>
+struct equality_expression : typed_expression<bool> {
+    typedef LHS lhs_type;
+    typedef RHS rhs_type;
+
+    static_assert(
+        std::is_same<typename lhs_type::type, typename rhs_type::type>::value,
+        "Type missmatch between left hand side and right hand side."
+    );
+
+    constexpr equality_expression(lhs_type&& lhs, rhs_type&& rhs) :
+        lhs{std::forward<LHS>(lhs)}, rhs{std::forward<RHS>(rhs)} {}
+
+    const lhs_type lhs;
+    const rhs_type rhs;
+};
+
+
 }
 
 
@@ -80,6 +117,34 @@ operator << (
     expression::column<T...> const& exp
 ) {
     return stream << decltype(exp)::attribute::key();
+}
+
+
+// overload for shifting an equality expression to an ostream
+template <
+    typename ...T
+>
+std::ostream&
+operator << (
+    std::ostream& stream,
+    expression::equality_expression<T...> const& exp
+) {
+    return stream << exp.lhs << " = " << exp.rhs;
+}
+
+
+// overloads for putting things together
+template <
+    typename LHS,
+    typename RHS
+>
+constexpr
+expression::equality_expression<LHS, RHS>
+operator == (
+    LHS&& lhs,
+    RHS&& rhs
+) {
+    return {std::forward<LHS>(lhs), std::forward<RHS>(rhs)};
 }
 
 
