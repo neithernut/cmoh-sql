@@ -94,6 +94,44 @@ struct abstract_select {
     }
 
 
+    /**
+     * Create a select statement from this one, with the where clause supplied
+     *
+     * If the select statement already has a where-clause, the new clause will
+     * be a conjunction of the old one and the new one.
+     */
+    template <
+        typename Expression
+    >
+    constexpr
+    typename std::enable_if<
+        std::is_same<where_clause, expression::expression>::value,
+        abstract_select<Expression, Fields...>
+    >::type
+    where(
+        Expression&& expr
+    ) const noexcept {
+        return {std::forward<Expression>(expr), _fields};
+    }
+
+    template <
+        typename Expression
+    >
+    constexpr
+    typename std::enable_if<
+        !std::is_same<where_clause, expression::expression>::value,
+        abstract_select<
+            expression::conjunction<where_clause, Expression>,
+            Fields...
+        >
+    >::type
+    where(
+        Expression&& expr
+    ) const noexcept {
+        return {_where_clause && std::forward<Expression>(expr), _fields};
+    }
+
+
 private:
     const where_clause _where_clause;
     const fields_tuple _fields;
