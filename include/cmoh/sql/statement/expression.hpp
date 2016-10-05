@@ -27,6 +27,7 @@
 
 // std includes
 #include <ostream>
+#include <type_traits>
 
 
 namespace cmoh {
@@ -104,10 +105,60 @@ struct equality_expression : typed_expression<bool> {
 };
 
 
+/**
+ * Representation of a conjunction
+ */
+template <
+    typename LHS,
+    typename RHS
+>
+struct conjunction : typed_expression<bool> {
+    typedef LHS lhs_type;
+    typedef RHS rhs_type;
+
+    static_assert(
+        std::is_same<typename lhs_type::type, bool>::value &&
+        std::is_same<typename rhs_type::type, bool>::value,
+        "Only expressions yielding boolean values can be used in a conjunction."
+    );
+
+    constexpr conjunction(lhs_type&& lhs, rhs_type&& rhs) :
+        lhs{std::forward<LHS>(lhs)}, rhs{std::forward<RHS>(rhs)} {}
+
+    const lhs_type lhs;
+    const rhs_type rhs;
+};
+
+
+/**
+ * Representation of a disjunction
+ */
+template <
+    typename LHS,
+    typename RHS
+>
+struct disjunction : typed_expression<bool> {
+    typedef LHS lhs_type;
+    typedef RHS rhs_type;
+
+    static_assert(
+        std::is_same<typename lhs_type::type, bool>::value &&
+        std::is_same<typename rhs_type::type, bool>::value,
+        "Only expressions yielding boolean values can be used in a disjunction."
+    );
+
+    constexpr disjunction(lhs_type&& lhs, rhs_type&& rhs) :
+        lhs{std::forward<LHS>(lhs)}, rhs{std::forward<RHS>(rhs)} {}
+
+    const lhs_type lhs;
+    const rhs_type rhs;
+};
+
+
 }
 
 
-// overload for shifting a column expression to an ostream
+// overload for shifting expressions to an ostream
 template <
     typename ...T
 >
@@ -119,8 +170,6 @@ operator << (
     return stream << decltype(exp)::attribute::key();
 }
 
-
-// overload for shifting an equality expression to an ostream
 template <
     typename ...T
 >
@@ -129,7 +178,29 @@ operator << (
     std::ostream& stream,
     expression::equality_expression<T...> const& exp
 ) {
-    return stream << exp.lhs << " = " << exp.rhs;
+    return stream << "( " << exp.lhs << " = " << exp.rhs << " )";
+}
+
+template <
+    typename ...T
+>
+std::ostream&
+operator << (
+    std::ostream& stream,
+    expression::conjunction<T...> const& exp
+) {
+    return stream << "( " << exp.lhs << " AND " << exp.rhs << " )";
+}
+
+template <
+    typename ...T
+>
+std::ostream&
+operator << (
+    std::ostream& stream,
+    expression::disjunction<T...> const& exp
+) {
+    return stream << "( " << exp.lhs << " OR " << exp.rhs << " )";
 }
 
 
@@ -141,6 +212,32 @@ template <
 constexpr
 expression::equality_expression<LHS, RHS>
 operator == (
+    LHS&& lhs,
+    RHS&& rhs
+) {
+    return {std::forward<LHS>(lhs), std::forward<RHS>(rhs)};
+}
+
+template <
+    typename LHS,
+    typename RHS
+>
+constexpr
+expression::conjunction<LHS, RHS>
+operator && (
+    LHS&& lhs,
+    RHS&& rhs
+) {
+    return {std::forward<LHS>(lhs), std::forward<RHS>(rhs)};
+}
+
+template <
+    typename LHS,
+    typename RHS
+>
+constexpr
+expression::disjunction<LHS, RHS>
+operator || (
     LHS&& lhs,
     RHS&& rhs
 ) {
